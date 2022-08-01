@@ -5,6 +5,7 @@ import qualified Data.Set as S
 import qualified Control.Monad.State as ST
 import Control.Monad (forM_, unless)
 import Utils
+import Day (Day)
 
 data Rotation = TurnLeft | TurnRight deriving (Show)
 
@@ -14,10 +15,6 @@ type Direction = (Int, Int)
 type Position = (Int, Int)
 
 type Pose = (Position, Direction)
-
-
-inputFile :: String
-inputFile = "day1.txt"
 
 readInstruction :: String -> Instruction
 readInstruction ('L':xs) = (TurnLeft, read xs)

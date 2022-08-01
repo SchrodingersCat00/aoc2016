@@ -1,8 +1,11 @@
 module Day8 where
+
 import Data.Char (isDigit)
 import qualified Data.Array.ST as S
 import qualified Data.Array.Unboxed as U
-import Control.Monad (forM_)
+import Control.Monad (forM_, unless, forM)
+import qualified Control.Monad.ST as ST
+import Utils
 
 inputFile :: String
 inputFile = "day8.txt"
@@ -12,16 +15,24 @@ data Instruction = Rect Int Int
                  | ShiftCol Int Int
                  deriving (Show)
 
-data Screen = Screen 
+data Screen = Screen
     { pixels :: U.UArray (Int, Int) Bool
     , width :: Int
     , height :: Int
-    } deriving (Show)
+    }
+
+instance Show Screen where
+    show Screen { pixels = p, width = w, height = h } =
+        '\n' : unlines [unwords [disp (p U.! (r, c)) | c <- [0..w-1]] | r <- [0..h-1]]
+        where
+            disp :: Bool -> String
+            disp True = "X"
+            disp False = "."
 
 emptyScreen :: Screen
 emptyScreen = let
-    w = 7
-    h = 3
+    w = 50
+    h = 6
     pixels = U.listArray ((0, 0), (h-1, w-1)) (replicate (h*w) False)
     in Screen pixels w h
 
@@ -56,14 +67,24 @@ run s@Screen { pixels = p, width = w, height = h } is = let
             case i of
                 Rect x y -> forM_ [(j, i) | i <- [0..x-1], j <- [0..y-1]] $ \idx ->
                     S.writeArray pixels idx True
-                ShiftCol idx by -> forM_ [0..h] $ \r -> do
-                    v <- S.readArray pixels ((r - by) `rotateMod` h, idx)
-                    S.writeArray pixels (r, idx) v
-                _ -> return ()
+                ShiftCol idx by -> do
+                    col <- forM [0..h-1] (\r -> S.readArray pixels (r, idx))
+                    forM_ (zip col ([by..h-1] ++ [0..by-1])) $ \(nv, r) -> do
+                        S.writeArray pixels (r, idx) nv
+                ShiftRow idx by -> do
+                    row <- forM [0..w-1] (\c -> S.readArray pixels (idx, c))
+                    forM_ (zip row ([by..w-1] ++ [0..by-1])) $ \(nv, c) -> do
+                        let ni = (c - by) `rotateMod` h
+                        S.writeArray pixels (idx, c) nv
         return pixels
     in s { pixels = newPixels }
 
+countOnPixels :: Screen -> Int
+countOnPixels = foldl (\c b -> if b then c+1 else c) 0 . U.elems . pixels
 
-part1 = run emptyScreen . map parseInstruction . lines
+part1 :: String -> Int
+part1 = countOnPixels . run emptyScreen . map parseInstruction . lines
 
-part2 x = ""
+part2 :: String -> Screen
+part2 = run emptyScreen . map parseInstruction . lines
+
