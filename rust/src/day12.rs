@@ -72,26 +72,26 @@ fn parse_instruction(input: &str) -> Instruction {
     }
 }
 
-fn step(program_state: &mut ProgramState) -> bool {
-    let instruction = &program_state.program[program_state.pc];
-    match instruction {
-        Instruction::Copy(op, reg) => {
-            program_state.pc += 1;
-            program_state.registry[reg] = op.get_value(program_state.registry);
-        },
-        Instruction::Inc(r) => {
-            program_state.pc += 1;
-            program_state.registry[r] += 1;
-        },
-        Instruction::Dec(r) => {
-            program_state.pc += 1;
-            program_state.registry[r] -= 1;
-        },
-        Instruction::Jnz(op, val) => {
-            program_state.pc = program_state.pc.checked_add(val);
-        }
-    }
-}
+// fn step(program_state: &mut ProgramState) -> bool {
+//     let instruction = &program_state.program[program_state.pc];
+//     match instruction {
+//         Instruction::Copy(op, reg) => {
+//             program_state.pc += 1;
+//             program_state.registry[reg] = op.get_value(program_state.registry);
+//         },
+//         Instruction::Inc(r) => {
+//             program_state.pc += 1;
+//             program_state.registry[r] += 1;
+//         },
+//         Instruction::Dec(r) => {
+//             program_state.pc += 1;
+//             program_state.registry[r] -= 1;
+//         },
+//         Instruction::Jnz(op, val) => {
+//             program_state.pc = program_state.pc.checked_add(val);
+//         }
+//     }
+// }
 
 fn run_program(program: Program) {
     let mut state = ProgramState {
@@ -100,7 +100,7 @@ fn run_program(program: Program) {
         registry: vec![0, 0, 0, 0]
     };
 
-    while step(&mut state) {}
+    // while step(&mut state) {}
 }
 
 impl Day for Day12 {

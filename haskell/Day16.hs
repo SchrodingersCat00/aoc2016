@@ -25,11 +25,9 @@ explode :: String -> String
 explode s = s ++ ['0'] ++ (reverse . bitFlip) s
 
 part :: Int -> String -> String
-part ds = checkSum 
+part ds = checkSum
         . take ds
-        . head 
-        . dropWhile ((<ds) . length) 
-        . iterate explode
+        . until ((>=ds) . length) explode
 
 part1 :: String -> String
 part1 = part 272

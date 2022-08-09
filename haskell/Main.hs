@@ -11,10 +11,11 @@ import qualified Day8
 import qualified Day9
 import qualified Day12
 import qualified Day16
+import qualified Day19
 
 
 main :: IO ()
 main = do
-    input <- readFile ("../data/" ++ Day16.inputFile)
-    putStrLn $ "Part1: " ++ show (Day16.part1 input)
-    putStrLn $ "Part2: " ++ show (Day16.part2 input)
+    input <- readFile ("../data/" ++ Day19.inputFile)
+    putStrLn $ "Part1: " ++ show (Day19.part1 input)
+    putStrLn $ "Part2: " ++ show (Day19.part2 input)

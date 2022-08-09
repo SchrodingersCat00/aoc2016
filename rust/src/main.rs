@@ -1,4 +1,6 @@
 mod day12;
+mod day19;
+
 pub mod common;
 
 use std::fs;
@@ -18,5 +20,5 @@ fn run_day<D: common::Day>() {
 }
 
 fn main() {
-    run_day::<day12::Day12>();
+    run_day::<day19::Day19>();
 }
