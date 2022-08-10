@@ -1,14 +1,11 @@
 module Day12 where
 
-import qualified Data.Map as M
 import qualified Data.Array as A
 import qualified Data.Array.IArray as IA
+import qualified Data.Map as M
 import Text.Read (readMaybe)
-import Debug.Trace
 
-import Utils
-inputFile :: String
-inputFile = "day12.txt"
+import Day
 
 type Reg = Char
 type Registry = M.Map Reg Int
@@ -16,7 +13,7 @@ type Registry = M.Map Reg Int
 data Operand = Register Reg | Constant Int deriving (Show)
 
 getValue :: Registry -> Operand -> Int
-getValue _ (Constant x) = x
+getValue _ (Constant x)   = x
 getValue reg (Register r) = M.findWithDefault 0 r reg
 
 data Instruction = Copy Operand Reg
@@ -35,16 +32,16 @@ parseInstruction = f . words
     where
         f :: [String] -> Instruction
         f ["cpy", x, y] = Copy (parseOperand x) (head y)
-        f ["inc", a] = Inc $ head a
-        f ["dec", a] = Dec $ head a
+        f ["inc", a]    = Inc $ head a
+        f ["dec", a]    = Dec $ head a
         f ["jnz", x, y] = Jnz (parseOperand x) (read y)
-        f _ = error "This should not happen"
+        f _             = error "This should not happen"
 
 type Program = A.Array Int Instruction
 
 data ProgramState = State
-    { program :: Program
-    , pc :: Int
+    { program  :: Program
+    , pc       :: Int
     , registry :: Registry
     , finished :: Bool
     } deriving Show
@@ -78,17 +75,19 @@ runNextInstruction s@State { program = p, pc = pc, registry = reg } =
 iterateWhile :: (a -> Bool) -> (a -> a) -> a -> a
 iterateWhile c f = head . dropWhile c . iterate f
 
-part :: (Program -> ProgramState) -> String -> Int
-part e x = let
-    is = (map parseInstruction . lines) x
+part :: (Program -> ProgramState) -> [Instruction] -> Int
+part e is = let
     program = IA.listArray (0, length is - 1) is
     initState = e program
     states = iterate runNextInstruction initState
     finalState = iterateWhile (not . finished) runNextInstruction initState
     in registry finalState M.! 'a'
 
-part1 :: String -> Int
-part1 = part emptyState1
-
-part2 :: String -> Int
-part2 = part emptyState2
+main :: IO ()
+main =
+    runDay $
+    Day
+        12
+        (map parseInstruction . lines)
+        (part emptyState1)
+        (part emptyState2)

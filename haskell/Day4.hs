@@ -1,12 +1,11 @@
-module Day4 where
+module Main where
 
+import Data.Char (chr, isAlpha, isNumber, ord)
+import Data.List (sortBy, isSubsequenceOf)
 import qualified Data.Map as M
 import qualified Data.Set as S
-import Data.Char ( isAlpha, isNumber, chr, ord )
-import Data.List (sortBy)
 
-inputFile :: String
-inputFile = "day4.txt"
+import Day
 
 type Occurence = (Char, Int)
 
@@ -37,7 +36,7 @@ topFive s = map fst $ take 5 $ sortBy occurenceCompare $ M.toList $ foldl increm
         occurenceCompare o o' = let res = compare (snd o') (snd o) in
             case res of
             EQ -> compare (fst o) (fst o')
-            _ -> res
+            _  -> res
 
 isReal :: Room -> Bool
 isReal r = S.fromList (topFive (roomName r)) == S.fromList (checksum r)
@@ -52,8 +51,24 @@ decryptRoom :: Room -> Room
 decryptRoom Room { roomName = r, sectorID = s, checksum = c } =
     Room { roomName = rotate r s, sectorID = s, checksum = c}
 
-part1 :: String -> Int
-part1 = foldl (\n r -> if isReal r then n+sectorID r else n) 0 . map parseRoom . lines
+part1 :: [Room] -> Int
+part1 = foldl (\n r -> if isReal r then n+sectorID r else n) 0
 
-part2 :: String -> [Room]
-part2 = map decryptRoom . filter isReal . map parseRoom . lines
+part2 :: [Room] -> Int
+part2 = sectorID 
+      . head 
+      . filter hasNorthPole 
+      . map decryptRoom 
+      . filter isReal
+    where
+        hasNorthPole Room { roomName = rn } =
+            "northpole" `isSubsequenceOf` rn
+
+main :: IO ()
+main =
+    runDay $
+    Day
+        4
+        (map parseRoom . lines)
+        part1
+        part2

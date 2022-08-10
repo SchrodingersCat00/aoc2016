@@ -1,14 +1,12 @@
-module Day8 where
+module Main where
 
-import Data.Char (isDigit)
+import Control.Monad (forM, forM_, unless)
+import qualified Control.Monad.ST as ST
 import qualified Data.Array.ST as S
 import qualified Data.Array.Unboxed as U
-import Control.Monad (forM_, unless, forM)
-import qualified Control.Monad.ST as ST
-import Utils
+import Data.Char (isDigit)
 
-inputFile :: String
-inputFile = "day8.txt"
+import Day
 
 data Instruction = Rect Int Int
                  | ShiftRow Int Int
@@ -17,7 +15,7 @@ data Instruction = Rect Int Int
 
 data Screen = Screen
     { pixels :: U.UArray (Int, Int) Bool
-    , width :: Int
+    , width  :: Int
     , height :: Int
     }
 
@@ -26,7 +24,7 @@ instance Show Screen where
         '\n' : unlines [unwords [disp (p U.! (r, c)) | c <- [0..w-1]] | r <- [0..h-1]]
         where
             disp :: Bool -> String
-            disp True = "X"
+            disp True  = "X"
             disp False = "."
 
 emptyScreen :: Screen
@@ -82,9 +80,17 @@ run s@Screen { pixels = p, width = w, height = h } is = let
 countOnPixels :: Screen -> Int
 countOnPixels = foldl (\c b -> if b then c+1 else c) 0 . U.elems . pixels
 
-part1 :: String -> Int
-part1 = countOnPixels . run emptyScreen . map parseInstruction . lines
+part1 :: [Instruction] -> Int
+part1 = countOnPixels . run emptyScreen
 
-part2 :: String -> Screen
-part2 = run emptyScreen . map parseInstruction . lines
+part2 :: [Instruction] -> Screen
+part2 = run emptyScreen
 
+main :: IO ()
+main =
+    runDay $
+    Day
+        8
+        (map parseInstruction . lines)
+        part1
+        part2

@@ -1,12 +1,15 @@
 module Day19 where
 
+import Control.Monad (liftM2, when)
+import Control.Monad.ST (ST, runST)
+import Data.Array.Base (STUArray (STUArray))
 import qualified Data.Array.MArray as A
-import Data.Array.ST (runSTArray, newListArray, readArray, writeArray)
-import Control.Monad.ST (runST, ST)
-import Data.STRef (newSTRef, STRef, readSTRef, writeSTRef)
-import Control.Monad (when, liftM2)
-import Data.Array.Base (STUArray(STUArray))
-import qualified Data.Sequence as S
+import Data.Array.ST (newListArray, readArray, runSTArray,
+                                    writeArray)
+import qualified Data.Sequence     as S
+import Data.STRef (STRef, newSTRef, readSTRef, writeSTRef)
+
+import Day
 
 inputFile :: String
 inputFile = "day19.txt"
@@ -16,7 +19,7 @@ whileM_ p f = go
     where go = do
             x <- p
             when x $ f >> go
-        
+
 party' :: Int -> Int
 party' n = (`S.index` 0) . f $ S.iterateN n (+1) 1
     where
@@ -37,6 +40,15 @@ party n = runST $ do
         return ()
     readSTRef i
 
-part1 _ = party 3018458
+part1 _ = party' 3018458
 
 part2 _ = 0
+
+main :: IO ()
+main =
+    runDay $
+    Day 
+        19
+        (read :: String -> Int)
+        part1
+        part2

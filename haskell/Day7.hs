@@ -1,13 +1,12 @@
 module Day7 where
 
-import qualified Data.Set as S
 import qualified Data.Set
+import qualified Data.Set as S
 
-inputFile :: String
-inputFile = "day7.txt"
+import Day
 
 data IPv7 = IPv7
-    { regular   :: [String]
+    { regular  :: [String]
     , hypernet :: [String]
     } deriving (Show)
 
@@ -44,17 +43,17 @@ collectAbas cs@(x:y:z:xs) = foldl addIfAba S.empty $ zip3 cs (y:z:xs) (z:xs)
             | otherwise = s
 collectAbas _ = S.empty
 
-part :: (IPv7 -> Bool) -> String -> Int
-part f = length . filter f . map parseIPv7 . lines
+part :: (IPv7 -> Bool) -> [IPv7] -> Int
+part f = length . filter f
 
-part1 :: String -> Int
+part1 :: [IPv7] -> Int
 part1 = part isValidIPv7
     where
         isValidIPv7 :: IPv7 -> Bool
         isValidIPv7 IPv7 { regular = r, hypernet = h } =
             any containsAbba r && not (any containsAbba h)
 
-part2 :: String -> Int
+part2 :: [IPv7] -> Int
 part2 = part supportsSSL
     where
         supportsSSL :: IPv7 -> Bool
@@ -67,3 +66,12 @@ part2 = part supportsSSL
         flipAbas :: S.Set ABA -> S.Set ABA
         flipAbas = S.map (\(x, y) -> (y, x))
 
+
+main :: IO ()
+main =
+    runDay $
+    Day
+        7
+        (map parseIPv7 . lines)
+        part1
+        part2

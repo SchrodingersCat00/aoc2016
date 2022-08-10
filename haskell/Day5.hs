@@ -1,8 +1,12 @@
-module Day5 where
+module Main where
 
-inputFile :: String
-inputFile = "day5.txt"
+import Day
 
-part1 x = x
-
-part2 x = x
+main :: IO ()
+main =
+    runDay $
+    Day 
+        5
+        id
+        id
+        id

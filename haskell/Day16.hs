@@ -1,9 +1,6 @@
 module Day16 where
 
-import Utils
-
-inputFile :: String
-inputFile = "day16.txt"
+import Day
 
 bitFlip :: String -> String
 bitFlip = map bitFlipC
@@ -29,8 +26,11 @@ part ds = checkSum
         . take ds
         . until ((>=ds) . length) explode
 
-part1 :: String -> String
-part1 = part 272
-
-part2 :: String -> String
-part2 = part 35651584
+main :: IO ()
+main =
+    runDay $
+    Day
+        16
+        id
+        (part 272)
+        (part 35651584)

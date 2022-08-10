@@ -1,10 +1,8 @@
-module Day9 where
+module Main where
 
-import Data.Char(isDigit)
-import Utils (eztrace)
+import Data.Char (isDigit)
 
-inputFile :: String
-inputFile = "day9.txt"
+import Day 
 
 decompress :: String -> String
 decompress x = decompress' x ""
@@ -24,3 +22,12 @@ part1 :: String -> Int
 part1 = length . decompress . filter (/=' ')
 
 part2 x = ""
+
+main :: IO ()
+main = 
+    runDay $
+    Day
+        9
+        id
+        part1
+        part2

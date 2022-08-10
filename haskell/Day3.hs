@@ -1,12 +1,10 @@
 module Day3 where
 
-import Utils
 import Data.Text (replace)
 
-type Triangle = (Int, Int, Int)
+import Day
 
-inputFile :: String
-inputFile = "day3.txt"
+type Triangle = (Int, Int, Int)
 
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (x, y, z) = f x y z
@@ -21,7 +19,7 @@ parseTriangle :: String -> Triangle
 parseTriangle s = t $ (map read . words) s
     where
         t [x, y, z] = (x, y, z)
-        t z = error $ "Invalid line" ++ show z
+        t z         = error $ "Invalid line" ++ show z
 
 part1 :: String -> Int
 part1 x = countTrue $ uncurry3 isTriangle . parseTriangle <$> lines x
@@ -36,3 +34,12 @@ part2 x = countTrue $ map (uncurry3 isTriangle) $ parse $ concatMap words $ line
 
         parseT :: String -> String -> String -> (Int, Int, Int)
         parseT x y z = (read x, read y, read z)
+
+main :: IO ()
+main = 
+    runDay $
+    Day
+        3
+        id
+        part1
+        part2

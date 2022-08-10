@@ -1,11 +1,10 @@
-module Day1 where
+module Main where
 
-import           Data.Either (fromRight)
-import qualified Data.Set as S
-import qualified Control.Monad.State as ST
 import Control.Monad (forM_, unless)
-import Utils
-import Day (Day)
+import Data.Either (fromRight)
+import qualified Data.Set as S
+
+import Day
 
 data Rotation = TurnLeft | TurnRight deriving (Show)
 
@@ -38,7 +37,7 @@ runInstructions :: [Instruction] -> Position
 runInstructions i = fst $ foldl step initPose i
 
 steps :: Pose -> [Instruction] -> [Position]
-steps p [] = [fst p]
+steps p []     = [fst p]
 steps p (i:is) = let next = step p i in fst next:steps next is
 
 mapPair :: (a -> b) -> (a, a) -> (b, b)
@@ -47,15 +46,17 @@ mapPair f (x, y) = (f x, f y)
 distance :: Position -> Int
 distance p = uncurry (+) $ mapPair abs p
 
-part1 :: String -> Int
-part1 i = distance $ runInstructions (parseInstructions i)
+-- part1 :: String -> Int
+part1 :: [Instruction] -> Int
+part1 = distance . runInstructions
 
-part2 :: String -> Int
-part2 x = (distance . go) (parseInstructions x)
+-- part2 :: String -> Int
+part2 :: [Instruction] -> Int
+part2 = distance . go
     where
         go :: [Instruction] -> Position
         go is = case revisitedPosition (intermediatePositions (steps initPose is)) of
-            Just x -> x
+            Just x  -> x
             Nothing -> error "No solution was found"
 
 range :: Int -> Int -> [Int]
@@ -77,9 +78,18 @@ intermediatePositions (x:y:xs) = positionsBetween x y ++ intermediatePositions (
             return (xs, ys)
 
 revisitedPosition :: [Position] -> Maybe Position
-revisitedPosition = f S.empty 
+revisitedPosition = f S.empty
     where
         f _ [] = Nothing
         f s (p:ps)
             | S.member p s = Just p
             | otherwise    = f (S.insert p s) ps
+
+main :: IO ()
+main =
+    runDay $
+    Day
+        1
+        parseInstructions
+        part1
+        part2
