@@ -72,6 +72,6 @@ main =
     runDay $
     Day
         7
-        (map parseIPv7 . lines)
+        (makeParser (map parseIPv7 . lines))
         part1
         part2

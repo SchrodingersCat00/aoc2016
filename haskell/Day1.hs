@@ -15,13 +15,17 @@ type Position = (Int, Int)
 
 type Pose = (Position, Direction)
 
-readInstruction :: String -> Instruction
-readInstruction ('L':xs) = (TurnLeft, read xs)
-readInstruction ('R':xs) = (TurnRight, read xs)
-readInstruction _        = error "Unexpected character"
+parseInstruction :: Parser Instruction
+parseInstruction =
+    (char 'L' >> many1 digit >>= \x -> return (TurnLeft, read x))
+    <|> (char 'R' >> many1 digit >>= \x -> return (TurnRight, read x))
 
-parseInstructions :: String -> [Instruction]
-parseInstructions i = map readInstruction $ (words . filter (/=',')) i
+parseInstructions :: Parser [Instruction]
+parseInstructions = many1 $ do
+    i <- parseInstruction
+    optional $ char ','
+    spaces
+    return i
 
 rotate :: Direction -> Rotation -> Direction
 rotate (x, y) TurnLeft  = (-y, x)

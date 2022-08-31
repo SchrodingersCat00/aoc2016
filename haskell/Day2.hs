@@ -89,6 +89,6 @@ main =
     runDay $
     Day
         2
-        parseDirections
+        (makeParser parseDirections)
         part1
         part2

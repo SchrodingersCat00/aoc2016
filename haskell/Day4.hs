@@ -4,6 +4,7 @@ import Data.Char (chr, isAlpha, isNumber, ord)
 import Data.List (sortBy, isSubsequenceOf)
 import qualified Data.Map as M
 import qualified Data.Set as S
+import Utils
 
 import Day
 
@@ -15,16 +16,17 @@ data Room = Room
     , checksum :: String
     } deriving (Show)
 
-parseRoom :: String -> Room
-parseRoom s =
-    let
-        stripped = filter (/='-') s
-        roomName = takeWhile isAlpha stripped
-        lastPart = dropWhile isAlpha stripped
-        sectorID = (takeWhile isNumber . dropWhile isAlpha) stripped
-        checksum = (takeWhile (/=']') . tail . dropWhile (/='[')) stripped
-    in Room { roomName = roomName, sectorID = read sectorID, checksum = checksum}
-
+parseRoom :: Parser Room
+parseRoom = do
+    roomNameParts <- many1 (many1 letter <* char '-')
+    sid <- read <$> many1 digit
+    char '['
+    cs <- many1 (satisfy (/=']'))
+    char ']'
+    return $ Room { roomName = concat roomNameParts
+                  , sectorID = sid
+                  , checksum = cs
+                  }
 
 topFive :: String -> [Char]
 topFive s = map fst $ take 5 $ sortBy occurenceCompare $ M.toList $ foldl incrementChar M.empty s
@@ -55,10 +57,10 @@ part1 :: [Room] -> Int
 part1 = foldl (\n r -> if isReal r then n+sectorID r else n) 0
 
 part2 :: [Room] -> Int
-part2 = sectorID 
-      . head 
-      . filter hasNorthPole 
-      . map decryptRoom 
+part2 = sectorID
+      . head
+      . filter hasNorthPole
+      . map decryptRoom
       . filter isReal
     where
         hasNorthPole Room { roomName = rn } =
@@ -69,6 +71,6 @@ main =
     runDay $
     Day
         4
-        (map parseRoom . lines)
+        (many1 $ parseRoom <* optional newline)
         part1
         part2

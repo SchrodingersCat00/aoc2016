@@ -34,6 +34,6 @@ main =
     runDay $
     Day
         6
-        id
+        (makeParser id)
         part1
         part2
